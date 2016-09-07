@@ -39,7 +39,7 @@ typedef struct listNode {
     struct listNode *prev;
     //后置节点
     struct listNode *next;
-    //节点的值
+    //节点的指针, 这里要注意一下, 是**指针**
     void *value;
 } listNode;
 
@@ -99,7 +99,17 @@ void listRelease(list *list);
 list *listAddNodeHead(list *list, void *value);
 //在数组的尾部添加元素
 list *listAddNodeTail(list *list, void *value);
-//插入元素吧?
+
+/**
+ 插入元素
+
+ @param list     数组
+ @param old_node 原始结点的位置
+ @param value    要插入的值(指针)
+ @param after    向前插入还是向后插入吧.? 我的理解是这样的
+
+ @return 数组指针
+ */
 list *listInsertNode(list *list, listNode *old_node, void *value, int after);
 //列举被删除的元素? 这是什么鬼...
 void listDelNode(list *list, listNode *node);

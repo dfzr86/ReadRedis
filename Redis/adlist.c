@@ -57,17 +57,23 @@ list *listCreate(void)
 }
 
 /* Free the whole list.
- *
- * This function can't fail. */
+ * 清空数组
+ * This function can't fail. 
+ * 这个方法不会失败, 必然会成功
+ */
+
 void listRelease(list *list)
 {
     unsigned long len;
     listNode *current, *next;
 
+    //标准的链表释放节点过程, 把节点指向第二个元素, 然后释放第一个. 指向第三个, 释放第二个...
     current = list->head;
     len = list->len;
     while(len--) {
         next = current->next;
+        //这句话的意思是, 如果上一个节点没有被释放的话, 就手动释放一下?
+        //TODO...可是这个free的实现在哪?
         if (list->free) list->free(current->value);
         zfree(current);
         current = next;
@@ -76,37 +82,48 @@ void listRelease(list *list)
 }
 
 /* Add a new node to the list, to head, containing the specified 'value'
+ * 在数组的头部添加一个新的节点, 节点中的值的指针 会被保存在数组中的值域
  * pointer as value.
  *
  * On error, NULL is returned and no operation is performed (i.e. the
+ * 如果返回错误, 则表示数组中没有变化, 例如 添加的节点跟原始节点相同
  * list remains unaltered).
- * On success the 'list' pointer you pass to the function is returned. */
+ * On success the 'list' pointer you pass to the function is returned. 
+ * 修改成功之后会返回数组的指针
+ */
 list *listAddNodeHead(list *list, void *value)
 {
     listNode *node;
-
+    //创建一个节点, 赋值
     if ((node = zmalloc(sizeof(*node))) == NULL)
         return NULL;
     node->value = value;
+    //如果数组是空数组, 则头节点 = 尾节点 = 要添加的节点
     if (list->len == 0) {
         list->head = list->tail = node;
         node->prev = node->next = NULL;
     } else {
+        //数组不空, 则直接把头结点的前驱指向要添加的节点, 节点的后继指向原来的头结点
         node->prev = NULL;
         node->next = list->head;
         list->head->prev = node;
         list->head = node;
     }
+    //数组长度 +1
     list->len++;
     return list;
 }
 
 /* Add a new node to the list, to tail, containing the specified 'value'
+ * 在数组的尾部添加一个结点, 并且把值的指针赋值给数组
  * pointer as value.
  *
  * On error, NULL is returned and no operation is performed (i.e. the
+ * 如果返回错误, 则表示数组中没有变化, 例如 添加的节点跟原始节点相同
  * list remains unaltered).
- * On success the 'list' pointer you pass to the function is returned. */
+ * On success the 'list' pointer you pass to the function is returned. 
+ * 修改成功之后会返回数组的指针
+ */
 list *listAddNodeTail(list *list, void *value)
 {
     listNode *node;
@@ -118,11 +135,16 @@ list *listAddNodeTail(list *list, void *value)
         list->head = list->tail = node;
         node->prev = node->next = NULL;
     } else {
+        //要添加的结点的前驱指向数组的尾部
         node->prev = list->tail;
+        //要添加结点的后继为空
         node->next = NULL;
+        //数组的尾部指向目标结点
         list->tail->next = node;
+        //尾结点赋值
         list->tail = node;
     }
+    //数组长度 +1
     list->len++;
     return list;
 }
