@@ -154,6 +154,7 @@ list *listInsertNode(list *list, listNode *old_node, void *value, int after) {
 
     if ((node = zmalloc(sizeof(*node))) == NULL)
         return NULL;
+    
     node->value = value;
     if (after) {
         node->prev = old_node;
