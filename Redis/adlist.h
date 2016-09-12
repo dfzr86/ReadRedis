@@ -57,6 +57,8 @@ typedef struct list {
     listNode *head;
     //尾节点
     listNode *tail;
+    
+    /******这几个属性是用来做数组的 copy 操作的********/
     //TODO... 复制某个节点的指针
     void *(*dup)(void *ptr);
     //释放某个节点的指针
@@ -64,6 +66,8 @@ typedef struct list {
     void (*free)(void *ptr);
     //匹配某个节点的指针
     int (*match)(void *ptr, void *key);
+    /*******************************************/
+    
     //数组的长度
     unsigned long len;
 } list;
@@ -119,6 +123,7 @@ listIter *listGetIterator(list *list, int direction);
 listNode *listNext(listIter *iter);
 //释放迭代器
 void listReleaseIterator(listIter *iter);
+//创建一个数组的副本, 相当于OC中的.copy操作? 
 list *listDup(list *orig);
 listNode *listSearchKey(list *list, void *key);
 //通过角标来搜索元素节点
@@ -127,7 +132,7 @@ listNode *listIndex(list *list, long index);
 void listRewind(list *list, listIter *li);
 //将迭代器的指针指向数组的尾部
 void listRewindTail(list *list, listIter *li);
-//数组翻转?
+//数组翻转? 
 void listRotate(list *list);
 
 /* Directions for iterators */

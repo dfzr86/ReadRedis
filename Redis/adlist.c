@@ -278,13 +278,18 @@ listNode *listNext(listIter *iter)
 }
 
 /* Duplicate the whole list. On out of memory NULL is returned.
+ * 拷贝数组, 当内存不足的时候会返回 NULL(复制失败)
  * On success a copy of the original list is returned.
- *
+ * 成功的话, 会返回一份拷贝之后的数组
  * The 'Dup' method set with listSetDupMethod() function is used
+ * 这个方法和 listSetDupMethod() 方法一起调用, 用来实现节点的拷贝
  * to copy the node value. Otherwise the same pointer value of
+ * 不然的话, 拷贝的数组也会使用原始的数据节点(的意思是你单纯的拷贝了这个数组, 得到了一个新的数组
  * the original node is used as value of the copied node.
- *
- * The original list both on success or error is never modified. */
+ * 但是你数组中的节点的值还是原来数组的值)
+ * The original list both on success or error is never modified. 
+ * 原始的数组, 无论成功还是失败, 都不会被修改
+ */
 list *listDup(list *orig)
 {
     list *copy;
@@ -296,7 +301,9 @@ list *listDup(list *orig)
     copy->dup = orig->dup;
     copy->free = orig->free;
     copy->match = orig->match;
+    //把迭代器指向数组的头部
     listRewind(orig, &iter);
+    //遍历数组
     while((node = listNext(&iter)) != NULL) {
         void *value;
 
@@ -308,6 +315,7 @@ list *listDup(list *orig)
             }
         } else
             value = node->value;
+        //把每一个节点拷贝, 然后塞到另一个数组的尾部
         if (listAddNodeTail(copy, value) == NULL) {
             listRelease(copy);
             return NULL;
@@ -317,13 +325,19 @@ list *listDup(list *orig)
 }
 
 /* Search the list for a node matching a given key.
+ * 通过给定的一个 key 来搜索数组
  * The match is performed using the 'match' method
+ * 搜索的过程需要用到 listSetMatchMethod() 方法
  * set with listSetMatchMethod(). If no 'match' method
+ * 如果 listSetMatchMethod() 方法已经设置了
  * is set, the 'value' pointer of every node is directly
+ * 每一个节点的 value指针 就会直接和 key指针去比较
  * compared with the 'key' pointer.
  *
  * On success the first matching node pointer is returned
+ * 成功的话,会返回第一个匹配上的节点
  * (search starts from head). If no matching node exists
+ * 匹配所搜是从头部开始的, 如果匹配失败, 则返回NULL
  * NULL is returned. */
 listNode *listSearchKey(list *list, void *key)
 {
@@ -346,18 +360,26 @@ listNode *listSearchKey(list *list, void *key)
 }
 
 /* Return the element at the specified zero-based index
+ * index的首位是0,
  * where 0 is the head, 1 is the element next to head
+ * 0后面是1..2..3...
  * and so on. Negative integers are used in order to count
+ * 倒叙查找的话, 使用负数来计数
  * from the tail, -1 is the last element, -2 the penultimate
- * and so on. If the index is out of range NULL is returned. */
+ * 如果倒叙来查找, 最后一个元素角标是-1, 上一个是 -2..-3..-4...
+ * and so on. If the index is out of range NULL is returned.
+ * 如果角标越界, 返回NULL
+ */
 listNode *listIndex(list *list, long index) {
     listNode *n;
 
+    //如果是倒叙查找
     if (index < 0) {
         index = (-index)-1;
         n = list->tail;
         while(index-- && n) n = n->prev;
     } else {
+        //正序查找
         n = list->head;
         while(index-- && n) n = n->next;
     }
@@ -365,6 +387,7 @@ listNode *listIndex(list *list, long index) {
 }
 
 /* Rotate the list removing the tail node and inserting it to the head. */
+//数组逆序一下, 貌似只是把头和尾换了一下?
 void listRotate(list *list) {
     listNode *tail = list->tail;
 
