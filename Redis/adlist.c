@@ -149,6 +149,7 @@ list *listAddNodeTail(list *list, void *value)
     return list;
 }
 
+//插入数据, after: 非0即真, 传正数表示向后插入
 list *listInsertNode(list *list, listNode *old_node, void *value, int after) {
     listNode *node;
 
@@ -180,33 +181,46 @@ list *listInsertNode(list *list, listNode *old_node, void *value, int after) {
 }
 
 /* Remove the specified node from the specified list.
+ * 在指定的数组中删除指定的节点
  * It's up to the caller to free the private value of the node.
- *
- * This function can't fail. */
+ * 节点的私有值, 通过调用者来释放?
+ * This function can't fail.
+ * 方法调用不会失败
+ */
 void listDelNode(list *list, listNode *node)
 {
+    //判断前驱有没有值,即是不是数组头部
     if (node->prev)
         node->prev->next = node->next;
     else
+        //数组头部
         list->head = node->next;
+    //判断有没有后继, 即是不是数组尾
     if (node->next)
         node->next->prev = node->prev;
     else
+        //数组尾
         list->tail = node->prev;
+    //如果当前正在释放? 还是说原来有释放过的值?
     if (list->free) list->free(node->value);
     zfree(node);
+    //数组长度-1
     list->len--;
 }
 
 /* Returns a list iterator 'iter'. After the initialization every
+ * 返回一个迭代元素, 内部会调用 listNext(),
  * call to listNext() will return the next element of the list.
- *
- * This function can't fail. */
+ * 这个方法就是用来做数组循环的, 内部会不断的获取下一个元素
+ * This function can't fail. 
+ * 该方法调用, 不会失败
+ */
 listIter *listGetIterator(list *list, int direction)
 {
     listIter *iter;
 
     if ((iter = zmalloc(sizeof(*iter))) == NULL) return NULL;
+    //顺序遍历, 还是逆序遍历
     if (direction == AL_START_HEAD)
         iter->next = list->head;
     else
@@ -221,22 +235,27 @@ void listReleaseIterator(listIter *iter) {
 }
 
 /* Create an iterator in the list private iterator structure */
+//将迭代器的指针指向表头
 void listRewind(list *list, listIter *li) {
     li->next = list->head;
     li->direction = AL_START_HEAD;
 }
-
+//将迭代器的指针指向表尾
 void listRewindTail(list *list, listIter *li) {
     li->next = list->tail;
     li->direction = AL_START_TAIL;
 }
 
 /* Return the next element of an iterator.
+ * 返回迭代器中的下一个元素(即数组中的下一个元素)
  * It's valid to remove the currently returned element using
+ * 调用 listDelNode() 方法来删除`当前`元素的操作是 可执行的
  * listDelNode(), but not to remove other elements.
- *
+ * 但是不能去移除其他的元素
  * The function returns a pointer to the next element of the list,
+ * 这个方法将会返回当前数组中的下一个元素
  * or NULL if there are no more elements, so the classical usage patter
+ * 如果没有元素(表尾?)的话, 就返回NULL, 标准的调用方法如下:
  * is:
  *
  * iter = listGetIterator(list,<direction>);

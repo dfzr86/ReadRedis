@@ -113,16 +113,19 @@ list *listAddNodeTail(list *list, void *value);
 list *listInsertNode(list *list, listNode *old_node, void *value, int after);
 //列举被删除的元素? 这是什么鬼...
 void listDelNode(list *list, listNode *node);
-//获取迭代器, 其实就是遍历数组吧
+//获取迭代器, 其实就是遍历数组吧, direction是顺序遍历还是逆序遍历
 listIter *listGetIterator(list *list, int direction);
 //遍历数组, 取下一个元素
 listNode *listNext(listIter *iter);
+//释放迭代器
 void listReleaseIterator(listIter *iter);
 list *listDup(list *orig);
 listNode *listSearchKey(list *list, void *key);
 //通过角标来搜索元素节点
 listNode *listIndex(list *list, long index);
+//将迭代器的指针指向数组的头部
 void listRewind(list *list, listIter *li);
+//将迭代器的指针指向数组的尾部
 void listRewindTail(list *list, listIter *li);
 //数组翻转?
 void listRotate(list *list);
