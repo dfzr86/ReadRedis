@@ -57,7 +57,7 @@ typedef struct list {
     listNode *head;
     //尾节点
     listNode *tail;
-    
+
     /******这几个属性是用来做数组的 copy 操作的********/
     //TODO... 复制某个节点的指针
     void *(*dup)(void *ptr);
