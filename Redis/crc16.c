@@ -79,6 +79,7 @@ static const uint16_t crc16tab[256]= {
     0x6e17,0x7e36,0x4e55,0x5e74,0x2e93,0x3eb2,0x0ed1,0x1ef0
 };
 
+//crc16没啥好说的, 我也不懂, 会用就行了吧..有想法的可以深入了解一下.
 uint16_t crc16(const char *buf, int len) {
     int counter;
     uint16_t crc = 0;
