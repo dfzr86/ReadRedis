@@ -44,6 +44,7 @@
 /* Unused arguments generate annoying warnings... */
 #define DICT_NOTUSED(V) ((void) V)
 
+//字典的数据结构
 typedef struct dictEntry {
     void *key;
     union {
