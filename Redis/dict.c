@@ -115,7 +115,6 @@ unsigned int dictGenHashFunction(const void *key, int len) {
 
     while(len >= 4) {
         uint32_t k = *(uint32_t*)data;
-
         k *= m;
         k ^= k >> r;
         k *= m;
